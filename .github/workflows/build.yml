@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        platform: [Win32, x64]
+        platform: [x64]
         configuration: [Release]
 
     steps:
@@ -35,12 +35,12 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
 
-    - name: Build DLL (${{ matrix.platform }})
+    - name: Build DLL
       run: |
-        msbuild PomodoroTimer.vcxproj /p:Platform=${{ matrix.platform }} /p:Configuration=${{ matrix.configuration }} /p:SolutionDir="${{ github.workspace }}\" /m
+        msbuild PomodoroTimer.vcxproj /p:Platform=x64 /p:Configuration=Release /p:SolutionDir="${{ github.workspace }}\" /m
 
-    - name: Upload artifact (${{ matrix.platform }})
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: PomodoroTimer-${{ matrix.platform }}
-        path: bin\${{ matrix.platform }}\${{ matrix.configuration }}\PomodoroTimer.dll
+        name: PomodoroTimer-x64
+        path: bin\x64\Release\PomodoroTimer.dll

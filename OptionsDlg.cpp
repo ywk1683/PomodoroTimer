@@ -258,7 +258,7 @@ void COptionsDlg::OnCbnSelchangeComboSoundList()
 	if (sel == 3)
 	{
 		// "浏览音频文件..." selected - open file dialog
-		static wchar_t szFilters[] = L"音频文件 (*.wav)|*.wav|所有文件 (*.*)|*.*||";
+		static wchar_t szFilters[] = L"音频文件 (*.wav;*.mp3;*.wma;*.flac;*.aac;*.ogg;*.m4a)|*.wav;*.mp3;*.wma;*.flac;*.aac;*.ogg;*.m4a|所有文件 (*.*)|*.*||";
 
 		CFileDialog dlg(TRUE, L"wav", NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, szFilters, this);
 		if (dlg.DoModal() == IDOK)
