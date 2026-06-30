@@ -17,8 +17,11 @@
 #define IDC_SPIN_NUM_LOOPS              1006
 #define IDR_WAVE1                       1006
 #define IDR_WAVE2                       1007
-#define IDC_CHECK_PLAY_SOUND            1007
 #define IDR_WAVE3                       1008
+#define IDR_WAVE4                       1024
+#define IDR_WAVE5                       1025
+#define IDR_WAVE6                       1026
+#define IDR_WAVE7                       1027
 #define IDC_COMBO_SOUND_LIST            1008
 #define IDC_BTN_SOUND_TEST              1009
 #define IDS_PLUGIN_NAME                 1009

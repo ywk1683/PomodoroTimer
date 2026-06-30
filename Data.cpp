@@ -64,69 +64,25 @@ namespace dm
         switch (id)
         {
         default:
-        case 0:
-            return IDR_WAVE1;
-
-        case 1:
-            return IDR_WAVE2;
-
-        case 2:
-            return IDR_WAVE3;
+        case 0: return IDR_WAVE1;
+        case 1: return IDR_WAVE2;
+        case 2: return IDR_WAVE3;
+        case 3: return IDR_WAVE4;
+        case 4: return IDR_WAVE5;
+        case 5: return IDR_WAVE6;
+        case 6: return IDR_WAVE7;
         }
     }
 
-    void play_sound(int id, int volume, const std::wstring &custom_path)
+    void play_sound(int id, int volume)
     {
         AFX_MANAGE_STATE(AfxGetStaticModuleState());
 
-        // Stop any previous playback
-        mciSendString(L"close all", NULL, 0, NULL);
+        DWORD vol = (static_cast<DWORD>(volume) * 0xFFFF) / 100;
+        waveOutSetVolume(NULL, MAKELONG(vol, vol));
 
-        std::wstring play_target;
-
-        if (id == 3 && !custom_path.empty())
-        {
-            play_target = custom_path;
-        }
-        else
-        {
-            // Extract built-in WAV resource to temp file
-            auto res_id = get_sound_resource_id(id);
-            HRSRC hRes = FindResource(AfxGetResourceHandle(), MAKEINTRESOURCE(res_id), L"WAVE");
-            if (!hRes) return;
-
-            HGLOBAL hResData = LoadResource(AfxGetResourceHandle(), hRes);
-            if (!hResData) return;
-
-            LPVOID pData = LockResource(hResData);
-            DWORD dataSize = SizeofResource(AfxGetResourceHandle(), hRes);
-
-            // Use fixed temp file path (overwritten on each playback)
-            wchar_t temp_path[MAX_PATH];
-            GetTempPathW(MAX_PATH, temp_path);
-            play_target = std::wstring(temp_path) + L"PomodoroTimer_temp.wav";
-
-            HANDLE hFile = CreateFileW(play_target.c_str(), GENERIC_WRITE, 0, NULL,
-                                       CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-            if (hFile == INVALID_HANDLE_VALUE) return;
-
-            DWORD written;
-            WriteFile(hFile, pData, dataSize, &written, NULL);
-            CloseHandle(hFile);
-        }
-
-        if (play_target.empty()) return;
-
-        // Open and play via MCI with volume control
-        std::wstring cmd = L"open \"" + play_target + L"\" alias mysound";
-        mciSendString(cmd.c_str(), NULL, 0, NULL);
-
-        // Set volume: MCI uses 0-1000 scale, we use 0-100
-        wchar_t vol_cmd[64];
-        swprintf_s(vol_cmd, L"setaudio mysound volume to %lu", (volume * 1000) / 100);
-        mciSendString(vol_cmd, NULL, 0, NULL);
-
-        mciSendString(L"play mysound", NULL, 0, NULL);
+        auto sound_res_id = get_sound_resource_id(id);
+        PlaySound(MAKEINTRESOURCE(sound_res_id), AfxGetResourceHandle(), SND_ASYNC | SND_RESOURCE);
     }
 }
 
@@ -227,16 +183,12 @@ void CDataManager::LoadConfig(const std::wstring &cfg_dir)
     m_config.play_sound = cfg_bool_val_getter(L"config", L"play_sound", 1);
 
     auto sound_id = cfg_int_val_getter(L"config", L"sound_id", 0);
-    if (sound_id < 0 || sound_id > 3) sound_id = 0;
+    if (sound_id < 0 || sound_id > 6) sound_id = 0;
     m_config.sound_id = sound_id;
 
     m_config.sound_volume = cfg_int_val_getter(L"config", L"sound_volume", 100);
     if (m_config.sound_volume < 0) m_config.sound_volume = 0;
     if (m_config.sound_volume > 100) m_config.sound_volume = 100;
-
-    wchar_t buffer[512]{ 0 };
-    GetPrivateProfileString(L"config", L"custom_sound_path", L"", buffer, 512, m_config_file_path.c_str());
-    m_config.custom_sound_path = buffer;
 
     auto dc_func = cfg_int_val_getter(L"config", L"taskbar_dc_action", 1);
     if (dc_func < 0 || dc_func > 1) dc_func = 1;
@@ -268,7 +220,6 @@ void CDataManager::SaveConfig() const
     cfg_bool_val_writter(L"config", L"play_sound", m_config.play_sound);
     cfg_int_val_writter(L"config", L"sound_id", m_config.sound_id);
     cfg_int_val_writter(L"config", L"sound_volume", m_config.sound_volume);
-    WritePrivateProfileString(L"config", L"custom_sound_path", m_config.custom_sound_path.c_str(), m_config_file_path.c_str());
     cfg_int_val_writter(L"config", L"taskbar_dc_action", m_config.taskbar_dc_action);
 }
 
@@ -474,7 +425,7 @@ void CDataManager::Update()
 
 void CDataManager::PlaySoundById(int id) const
 {
-    dm::play_sound(id, m_config.sound_volume, m_config.custom_sound_path);
+    dm::play_sound(id, m_config.sound_volume);
 }
 
 // go to next loop.

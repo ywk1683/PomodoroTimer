@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Resource.h"
-#include <string>
 #include <map>
 
 struct SConfig
@@ -25,9 +24,8 @@ struct SConfig
     int taskbar_dc_action{ 1 };
 
     bool play_sound{ true };
-    int sound_id{ 0 };  // 0-2 built-in, 3 = custom
+    int sound_id{ 0 };  // 0-6
     int sound_volume{ 100 };  // 0-100
-    std::wstring custom_sound_path;
 
     bool show_logo{ true };
 };

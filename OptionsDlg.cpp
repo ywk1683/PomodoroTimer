@@ -124,11 +124,14 @@ BOOL COptionsDlg::OnInitDialog()
 	// enable/disable controls of long break
 	EnableControlsAboutLongBreak(m_boolUseLongBreak);
 
-	// init sound list combobox: 3 built-in + browse item
-	m_ctrlSoundList.AddString(L"Sound-1");
-	m_ctrlSoundList.AddString(L"Sound-2");
-	m_ctrlSoundList.AddString(L"Sound-3");
-	m_ctrlSoundList.AddString(L"浏览音频文件...");
+	// init sound list combobox: 7 built-in sounds (filenames without .wav)
+	m_ctrlSoundList.AddString(L"Alarm_ascend");
+	m_ctrlSoundList.AddString(L"Alarm_beep");
+	m_ctrlSoundList.AddString(L"Alarm_bell");
+	m_ctrlSoundList.AddString(L"Alarm_chime");
+	m_ctrlSoundList.AddString(L"Alarm_dual_tone");
+	m_ctrlSoundList.AddString(L"Alarm_long_chime");
+	m_ctrlSoundList.AddString(L"Alarm_notify");
 	m_ctrlSoundList.SetCurSel(cfg.sound_id);
 
 	// init volume slider
@@ -254,34 +257,8 @@ void COptionsDlg::OnBnClickedBtnSoundTest()
 
 void COptionsDlg::OnCbnSelchangeComboSoundList()
 {
-	int sel = m_ctrlSoundList.GetCurSel();
-	if (sel == 3)
-	{
-		// "浏览音频文件..." selected - open file dialog
-		static wchar_t szFilters[] = L"音频文件 (*.wav;*.mp3;*.wma;*.flac;*.aac;*.ogg;*.m4a)|*.wav;*.mp3;*.wma;*.flac;*.aac;*.ogg;*.m4a|所有文件 (*.*)|*.*||";
-
-		CFileDialog dlg(TRUE, L"wav", NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, szFilters, this);
-		if (dlg.DoModal() == IDOK)
-		{
-			// save custom sound path and keep selection at index 3
-			auto &cfg = CDataManager::Instance().GetConfig();
-			cfg.custom_sound_path = dlg.GetPathName().GetString();
-			cfg.sound_id = 3;
-		}
-		else
-		{
-			// user cancelled, revert combo to previous sound_id
-			auto &cfg = CDataManager::Instance().GetConfig();
-			m_ctrlSoundList.SetCurSel(cfg.sound_id);
-		}
-	}
-	else
-	{
-		// built-in sound selected, clear custom path
-		auto &cfg = CDataManager::Instance().GetConfig();
-		cfg.sound_id = sel;
-		cfg.custom_sound_path.clear();
-	}
+	auto &cfg = CDataManager::Instance().GetConfig();
+	cfg.sound_id = m_ctrlSoundList.GetCurSel();
 }
 
 
