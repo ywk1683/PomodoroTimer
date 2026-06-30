@@ -79,27 +79,54 @@ namespace dm
     {
         AFX_MANAGE_STATE(AfxGetStaticModuleState());
 
+        // Stop any previous playback
+        mciSendString(L"close all", NULL, 0, NULL);
+
+        std::wstring play_target;
+
         if (id == 3 && !custom_path.empty())
         {
-            // Play custom sound (any format) via MCI with volume control
-            mciSendString(L"close all", NULL, 0, NULL);
-            std::wstring cmd = L"open \"" + custom_path + L"\" alias mysound";
-            mciSendString(cmd.c_str(), NULL, 0, NULL);
-
-            wchar_t vol_cmd[64];
-            swprintf_s(vol_cmd, L"setaudio mysound volume to %lu", (volume * 1000) / 100);
-            mciSendString(vol_cmd, NULL, 0, NULL);
-            mciSendString(L"play mysound", NULL, 0, NULL);
+            play_target = custom_path;
         }
         else
         {
-            // Play built-in WAV resource with volume
-            DWORD vol = (volume * 0xFFFF) / 100;
-            waveOutSetVolume(NULL, MAKELONG(vol, vol));
+            // Extract built-in WAV resource to temp file
+            auto res_id = get_sound_resource_id(id);
+            HRSRC hRes = FindResource(AfxGetResourceHandle(), MAKEINTRESOURCE(res_id), L"WAVE");
+            if (!hRes) return;
 
-            auto sound_res_id = get_sound_resource_id(id);
-            PlaySound(MAKEINTRESOURCE(sound_res_id), AfxGetResourceHandle(), SND_ASYNC | SND_RESOURCE);
+            HGLOBAL hResData = LoadResource(AfxGetResourceHandle(), hRes);
+            if (!hResData) return;
+
+            LPVOID pData = LockResource(hResData);
+            DWORD dataSize = SizeofResource(AfxGetResourceHandle(), hRes);
+
+            // Use fixed temp file path (overwritten on each playback)
+            wchar_t temp_path[MAX_PATH];
+            GetTempPathW(MAX_PATH, temp_path);
+            play_target = std::wstring(temp_path) + L"PomodoroTimer_temp.wav";
+
+            HANDLE hFile = CreateFileW(play_target.c_str(), GENERIC_WRITE, 0, NULL,
+                                       CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+            if (hFile == INVALID_HANDLE_VALUE) return;
+
+            DWORD written;
+            WriteFile(hFile, pData, dataSize, &written, NULL);
+            CloseHandle(hFile);
         }
+
+        if (play_target.empty()) return;
+
+        // Open and play via MCI with volume control
+        std::wstring cmd = L"open \"" + play_target + L"\" alias mysound";
+        mciSendString(cmd.c_str(), NULL, 0, NULL);
+
+        // Set volume: MCI uses 0-1000 scale, we use 0-100
+        wchar_t vol_cmd[64];
+        swprintf_s(vol_cmd, L"setaudio mysound volume to %lu", (volume * 1000) / 100);
+        mciSendString(vol_cmd, NULL, 0, NULL);
+
+        mciSendString(L"play mysound", NULL, 0, NULL);
     }
 }
 
