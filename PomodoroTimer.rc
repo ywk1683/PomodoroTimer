@@ -1,0 +1,307 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+#include "verrsrc.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 中文(简体，中国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "#include ""verrsrc.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#include ""res\\PomodoroTimer.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
+    "#include ""l.CHS\\afxres.rc""      // 标准组件\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,4,0,45
+ PRODUCTVERSION 1,4,0,45
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404b0"
+        BEGIN
+            VALUE "CompanyName", "By Hoajia"
+            VALUE "FileDescription", "PomodoroTimer plugin for TrafficMonitor"
+            VALUE "FileVersion", "1.4.0.45"
+            VALUE "InternalName", "PomodoroTimer.dll"
+            VALUE "LegalCopyright", "Copyright (C) 2022 By Haojia"
+            VALUE "OriginalFilename", "PomodoroTimer.dll"
+            VALUE "ProductName", "PomodoroTimer"
+            VALUE "ProductVersion", "1.4.0.45"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON_LOGO           ICON                    "res\\PT-logo.ico"
+
+IDI_ICON_LOGO_STOP      ICON                    "res\\PT-logo-stop.ico"
+
+IDI_ICON_LOGO_BREAK     ICON                    "res\\PT-logo-break.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_MAIN MENU
+BEGIN
+    POPUP "Func"
+    BEGIN
+        MENUITEM "开始(&S)",                      ID_FUNC_START
+        MENUITEM "暂停(&P)",                      ID_FUNC_PAUSE
+        MENUITEM "跳过(&N)",                      ID_FUNC_SKIP
+        MENUITEM "停止(&T)",                      ID_FUNC_STOP
+        MENUITEM SEPARATOR
+        MENUITEM "选项(&O)",                      ID_FUNC_OPTIONS
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DLG_OPTIONS DIALOGEX 0, 0, 239, 252
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "PomodoroTimer"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "时间设置(分钟)",IDC_STATIC,7,7,225,77
+    RTEXT           "工作时长:",IDC_STATIC,15,24,36,8
+    EDITTEXT        IDC_EDIT_TIME_SPAN_WORK,62,22,30,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    CONTROL         "",IDC_SPIN_TIME_SPAN_WORK,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,94,22,10,14
+    RTEXT           "短休息时长:",IDC_STATIC,125,24,45,8
+    EDITTEXT        IDC_EDIT_TIME_SPAN_SHORT_BREAK,181,22,30,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    CONTROL         "",IDC_SPIN_TIME_SPAN_SHORT_BREAK,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,213,22,11,14
+    CONTROL         "使用长休息时间",IDC_CHECK_USE_LONG_BREAK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,45,72,10
+    RTEXT           "长休息时长:",IDC_STATIC,125,45,45,8
+    EDITTEXT        IDC_EDIT_TIME_SPAN_LONG_BREAK,181,43,30,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    CONTROL         "",IDC_SPIN_TIME_SPAN_LONG_BREAK,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,213,43,10,14
+    LTEXT           "每间隔",IDC_STATIC,26,64,25,8
+    EDITTEXT        IDC_EDIT_LONG_BREAK_INTERVAL,62,61,30,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    CONTROL         "",IDC_SPIN_LONG_BREAK_INTERVAL,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,94,61,10,14
+    LTEXT           "个工作时段使用长时间休息",IDC_STATIC,114,64,97,8
+    CONTROL         "自动启动",IDC_CHECK_AUTO_START,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,93,48,10
+    CONTROL         "剩余时间显示秒",IDC_CHECK_SHOW_SECONDS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,129,93,72,10
+    CONTROL         "自动循环",IDC_CHECK_AUTO_LOOP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,113,48,10
+    LTEXT           "次数:",IDC_STATIC,56,114,20,8
+    EDITTEXT        IDC_EDIT_NUM_LOOPS,77,112,30,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    CONTROL         "",IDC_SPIN_NUM_LOOPS,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,109,112,11,14
+    LTEXT           "双击任务栏窗口：",IDC_STATIC,7,135,65,8
+    CONTROL         "开始或暂停计时器",IDC_RADIO_DC_SWITCH_TIMER_STATE,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,16,149,80,10
+    CONTROL         "打开选项窗口",IDC_RADIO_DC_OPEN_OPTIONS_DLG,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,129,149,64,10
+    CONTROL         "播放提示音",IDC_CHECK_PLAY_SOUND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,168,56,10
+    COMBOBOX        IDC_COMBO_SOUND_LIST,66,167,144,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "▶",IDC_BTN_SOUND_TEST,215,166,17,14
+    LTEXT           "音量:",IDC_STATIC,15,186,24,8
+    CONTROL         "",IDC_SLIDER_VOLUME,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,50,184,140,16
+    LTEXT           "100",IDC_STATIC_VOLUME_VALUE,195,186,20,8
+    CONTROL         "使用自定义提示音",IDC_CHECK_CUSTOM_SOUND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,204,80,10
+    EDITTEXT        IDC_EDIT_CUSTOM_SOUND_PATH,95,202,105,14,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "浏览...",IDC_BTN_BROWSE_SOUND,205,200,28,14
+    PUSHBUTTON      "捐助作者",IDC_BTN_DONATE,7,232,50,14
+    DEFPUSHBUTTON   "确定",IDOK,125,232,50,14
+    PUSHBUTTON      "取消",IDCANCEL,182,232,50,14
+END
+
+IDD_DLG_DONATE DIALOGEX 0, 0, 229, 172
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "捐助作者"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,172,151,50,14
+    LTEXT           "如果你觉得本软件对你有帮助，可以扫描下方二维码捐助作者，帮助作者更好的完善软件功能。金额请随意。",IDC_STATIC,7,7,215,18
+    CONTROL         IDS_PLUGIN_DESCRIPTION,IDC_STATIC,"Static",SS_BITMAP,7,50,100,92
+    CONTROL         IDS_PS_RUNNING,IDC_STATIC,"Static",SS_BITMAP,122,50,100,92
+    LTEXT           "支付宝",IDC_STATIC,44,33,25,8
+    LTEXT           "微信",IDC_STATIC,164,33,17,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DLG_OPTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 232
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 245
+    END
+
+    IDD_DLG_DONATE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 222
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 165
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DLG_OPTIONS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DLG_DONATE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// WAVE
+//
+
+IDR_WAVE1               WAVE                    "res\\Alarm02.wav"
+
+IDR_WAVE2               WAVE                    "res\\Alarm05.wav"
+
+IDR_WAVE3               WAVE                    "res\\Alarm06.wav"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP_QR_ALIPAY    BITMAP                  "res\\QR_AliPay.bmp"
+
+IDB_BITMAP_QR_WECHAT    BITMAP                  "res\\QR_WeChat.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_NAME         "番茄钟"
+    IDS_PLUGIN_DESCRIPTION  "用于TrafficMonitor的番茄钟插件"
+    IDS_PS_RUNNING          "运行中"
+    IDS_PS_PAUSE            "暂停"
+    IDS_PS_STOP             "停止"
+    IDS_PTS_WORK            "工作中"
+    IDS_PTS_BREAK           "休息中"
+    IDS_MINUTE              "分钟"
+    IDS_OPT_DLG_TITLE       "番茄钟-选项"
+    IDS_OPT_DLG_CANNOT_SAVE "番茄钟正在运行，无法保存设置"
+    IDS_OPT_DLG_SAVING_WARN "番茄钟正在运行，部分设置将在下一状态开始时生效"
+    IDS_VERSION             "1.4"
+END
+
+#endif    // 中文(简体，中国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE 4, 2
+#include "res\PomodoroTimer.rc2"  // 非 Microsoft Visual C++ 编辑的资源
+#include "l.CHS\afxres.rc"      // 标准组件
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

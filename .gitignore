@@ -1,0 +1,12 @@
+# Build output
+bin/
+Debug/
+Release/
+x64/
+Win32/
+*.user
+*.suo
+*.sdf
+*.db
+ipch/
+.vs/

@@ -1,0 +1,43 @@
+name: Build DLL
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    strategy:
+      matrix:
+        platform: [Win32, x64]
+        configuration: [Release]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download PluginInterface.h
+      shell: pwsh
+      run: |
+        $url = "https://raw.githubusercontent.com/zhongyang219/TrafficMonitor/master/include/PluginInterface.h"
+        $dir = Join-Path ${{ github.workspace }} "include"
+        New-Item -ItemType Directory -Force -Path $dir
+        Invoke-WebRequest -Uri $url -OutFile (Join-Path $dir "PluginInterface.h")
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build DLL (${{ matrix.platform }})
+      run: |
+        msbuild PomodoroTimer.vcxproj /p:Platform=${{ matrix.platform }} /p:Configuration=${{ matrix.configuration }} /p:SolutionDir="${{ github.workspace }}\" /m
+
+    - name: Upload artifact (${{ matrix.platform }})
+      uses: actions/upload-artifact@v4
+      with:
+        name: PomodoroTimer-${{ matrix.platform }}
+        path: bin\${{ matrix.platform }}\${{ matrix.configuration }}\PomodoroTimer.dll
