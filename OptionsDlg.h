@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "afxdialogex.h"
 
 
@@ -25,7 +25,6 @@ protected:
 	void EnableControlsAboutLoops(BOOL enable = TRUE);
 	void EnableControlsAboutSound(BOOL enable = TRUE);
 	void EnableControlsAboutLongBreak(BOOL enable = TRUE);
-	void UpdateVolumeLabel();
 
 	afx_msg void VerifyNumberEditValue(CEdit &edit, CSpinButtonCtrl &editBuddy);
 public:
@@ -42,8 +41,6 @@ public:
 	afx_msg void OnBnClickedCheckPlaySound();
 	afx_msg void OnBnClickedBtnSoundTest();
 	afx_msg void OnBnClickedBtnDonate();
-	afx_msg void OnCbnSelchangeComboSoundList();
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 
 	CEdit m_ctrlEditTimeSpanWork;
 	CEdit m_ctrlEditTimeSpanShortBreak;
@@ -56,12 +53,11 @@ public:
 	CSpinButtonCtrl m_ctrlSpinLongBreakInterval;
 	CSpinButtonCtrl m_ctrlSpinNumLoops;
 	CComboBox m_ctrlSoundList;
-	CSliderCtrl m_ctrlSliderVolume;
+	CSliderCtrl m_ctrlVolumeSlider;
 	BOOL m_boolAutoStart;
 	BOOL m_boolAutoLoop;
 	BOOL m_boolPlaySound;
 	BOOL m_boolShowSeconds;
-	int m_intSoundVolume;
 	int m_intRadioDoubleClickAction;
 	BOOL m_boolUseLongBreak;
 	afx_msg void OnBnClickedCheckUseLongBreak();

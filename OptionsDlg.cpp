@@ -1,4 +1,4 @@
-// OptionsDlg.cpp: 实现文件
+﻿// OptionsDlg.cpp: 实现文件
 //
 
 #include "pch.h"
@@ -21,7 +21,6 @@ COptionsDlg::COptionsDlg(CWnd* pParent /*=nullptr*/)
 	, m_boolPlaySound(FALSE)
 	, m_boolAutoStart(FALSE)
 	, m_boolShowSeconds(FALSE)
-	, m_intSoundVolume(100)
 	, m_intRadioDoubleClickAction(0)
 	, m_boolUseLongBreak(FALSE)
 {
@@ -42,7 +41,7 @@ void COptionsDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK_AUTO_LOOP, m_boolAutoLoop);
 	DDX_Check(pDX, IDC_CHECK_PLAY_SOUND, m_boolPlaySound);
 	DDX_Control(pDX, IDC_COMBO_SOUND_LIST, m_ctrlSoundList);
-	DDX_Control(pDX, IDC_SLIDER_VOLUME, m_ctrlSliderVolume);
+	DDX_Control(pDX, IDC_SLIDER_VOLUME, m_ctrlVolumeSlider);
 	DDX_Control(pDX, IDC_EDIT_TIME_SPAN_WORK, m_ctrlEditTimeSpanWork);
 	DDX_Control(pDX, IDC_EDIT_TIME_SPAN_SHORT_BREAK, m_ctrlEditTimeSpanShortBreak);
 	DDX_Control(pDX, IDC_EDIT_NUM_LOOPS, m_ctrlEditNumLoops);
@@ -61,8 +60,6 @@ BEGIN_MESSAGE_MAP(COptionsDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_LOOP, &COptionsDlg::OnBnClickedCheckAutoLoop)
 	ON_BN_CLICKED(IDC_CHECK_PLAY_SOUND, &COptionsDlg::OnBnClickedCheckPlaySound)
 	ON_BN_CLICKED(IDC_BTN_SOUND_TEST, &COptionsDlg::OnBnClickedBtnSoundTest)
-	ON_CBN_SELCHANGE(IDC_COMBO_SOUND_LIST, &COptionsDlg::OnCbnSelchangeComboSoundList)
-	ON_WM_HSCROLL()
 	ON_EN_CHANGE(IDC_EDIT_TIME_SPAN_WORK, &COptionsDlg::OnEnChangeEditTimeSpanWork)
 	ON_EN_CHANGE(IDC_EDIT_TIME_SPAN_SHORT_BREAK, &COptionsDlg::OnEnChangeEditTimeSpanShortBreak)
 	ON_EN_CHANGE(IDC_EDIT_NUM_LOOPS, &COptionsDlg::OnEnChangeEditNumLoops)
@@ -124,7 +121,7 @@ BOOL COptionsDlg::OnInitDialog()
 	// enable/disable controls of long break
 	EnableControlsAboutLongBreak(m_boolUseLongBreak);
 
-	// init sound list combobox: 7 built-in sounds (filenames without .wav)
+	// init sound list combobox
 	m_ctrlSoundList.AddString(L"Alarm_ascend");
 	m_ctrlSoundList.AddString(L"Alarm_beep");
 	m_ctrlSoundList.AddString(L"Alarm_bell");
@@ -135,11 +132,8 @@ BOOL COptionsDlg::OnInitDialog()
 	m_ctrlSoundList.SetCurSel(cfg.sound_id);
 
 	// init volume slider
-	m_ctrlSliderVolume.SetRange(0, 100);
-	m_ctrlSliderVolume.SetPos(cfg.sound_volume);
-	m_ctrlSliderVolume.SetTicFreq(10);
-	m_intSoundVolume = cfg.sound_volume;
-	UpdateVolumeLabel();
+	m_ctrlVolumeSlider.SetRange(0, 100);
+	m_ctrlVolumeSlider.SetPos(cfg.sound_volume);
 
 	// init radio buttons of the action when user double clicked taskbar window
 	m_intRadioDoubleClickAction = cfg.taskbar_dc_action;
@@ -161,13 +155,6 @@ void COptionsDlg::EnableControlsAboutSound(BOOL enable /* = TRUE */)
 	GetDlgItem(IDC_COMBO_SOUND_LIST)->EnableWindow(enable);
 	GetDlgItem(IDC_BTN_SOUND_TEST)->EnableWindow(enable);
 	GetDlgItem(IDC_SLIDER_VOLUME)->EnableWindow(enable);
-}
-
-void COptionsDlg::UpdateVolumeLabel()
-{
-	CString str;
-	str.Format(L"%d", m_intSoundVolume);
-	SetDlgItemText(IDC_STATIC_VOLUME_VALUE, str);
 }
 
 void COptionsDlg::EnableControlsAboutLongBreak(BOOL enable /* = TRUE */)
@@ -213,7 +200,7 @@ void COptionsDlg::OnOK()
 
 	cfg.play_sound = m_boolPlaySound == TRUE;
 	cfg.sound_id = m_ctrlSoundList.GetCurSel();
-	cfg.sound_volume = m_ctrlSliderVolume.GetPos();
+	cfg.sound_volume = m_ctrlVolumeSlider.GetPos();
 
 	cfg.show_time_seconds = m_boolShowSeconds == TRUE;
 
@@ -252,25 +239,6 @@ void COptionsDlg::OnBnClickedCheckPlaySound()
 void COptionsDlg::OnBnClickedBtnSoundTest()
 {
 	CDataManager::Instance().PlaySoundById(m_ctrlSoundList.GetCurSel());
-}
-
-
-void COptionsDlg::OnCbnSelchangeComboSoundList()
-{
-	auto &cfg = CDataManager::Instance().GetConfig();
-	cfg.sound_id = m_ctrlSoundList.GetCurSel();
-}
-
-
-void COptionsDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
-{
-	if (pScrollBar == (CScrollBar*)&m_ctrlSliderVolume)
-	{
-		m_intSoundVolume = m_ctrlSliderVolume.GetPos();
-		UpdateVolumeLabel();
-	}
-
-	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 
@@ -319,7 +287,6 @@ void COptionsDlg::OnEnChangeEditNumLoops()
 
 void COptionsDlg::OnBnClickedBtnDonate()
 {
-	// Show about dialog
-	CDialogEx aboutDlg(IDD_DLG_ABOUT, this);
-	aboutDlg.DoModal();
+	CDialogEx dlg(IDD_DLG_ABOUT, this);
+	dlg.DoModal();
 }

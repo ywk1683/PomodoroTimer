@@ -1,10 +1,9 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Data.h"
 
 #include <ctime>
 #include <thread>
 #include <memory>
-#include <mmsystem.h>
 
 namespace dm
 {
@@ -64,25 +63,160 @@ namespace dm
         switch (id)
         {
         default:
-        case 0: return IDR_WAVE1;
-        case 1: return IDR_WAVE2;
-        case 2: return IDR_WAVE3;
-        case 3: return IDR_WAVE4;
-        case 4: return IDR_WAVE5;
-        case 5: return IDR_WAVE6;
-        case 6: return IDR_WAVE7;
+        case 0:
+            return IDR_WAVE1;
+        case 1:
+            return IDR_WAVE2;
+        case 2:
+            return IDR_WAVE3;
+        case 3:
+            return IDR_WAVE4;
+        case 4:
+            return IDR_WAVE5;
+        case 5:
+            return IDR_WAVE6;
+        case 6:
+            return IDR_WAVE7;
         }
     }
 
     void play_sound(int id, int volume)
     {
+        auto sound_res_id = get_sound_resource_id(id);
+
         AFX_MANAGE_STATE(AfxGetStaticModuleState());
 
-        DWORD vol = (static_cast<DWORD>(volume) * 0xFFFF) / 100;
-        waveOutSetVolume(NULL, MAKELONG(vol, vol));
+        HRSRC hResInfo = FindResource(AfxGetResourceHandle(), MAKEINTRESOURCE(sound_res_id), _T("WAVE"));
+        if (hResInfo == nullptr) return;
 
-        auto sound_res_id = get_sound_resource_id(id);
-        PlaySound(MAKEINTRESOURCE(sound_res_id), AfxGetResourceHandle(), SND_ASYNC | SND_RESOURCE);
+        HGLOBAL hResData = LoadResource(AfxGetResourceHandle(), hResInfo);
+        if (hResData == nullptr) return;
+
+        void* pResData = LockResource(hResData);
+        if (pResData == nullptr) return;
+
+        DWORD resSize = SizeofResource(AfxGetResourceHandle(), hResInfo);
+
+        HMMIO hmmio = mmioOpen(NULL, NULL, MMIO_ALLOCBUF | MMIO_READ);
+        if (hmmio == NULL)
+        {
+            UnlockResource(hResData);
+            FreeResource(hResData);
+            return;
+        }
+
+        MMIOINFO mmioinfo;
+        memset(&mmioinfo, 0, sizeof(MMIOINFO));
+        mmioinfo.fccIOProc = FOURCC_MEM;
+        mmioinfo.pchBuffer = (HPSTR)pResData;
+        mmioinfo.cchBuffer = resSize;
+        hmmio = mmioOpen(NULL, &mmioinfo, MMIO_READ);
+        if (hmmio == NULL)
+        {
+            UnlockResource(hResData);
+            FreeResource(hResData);
+            return;
+        }
+
+        MMCKINFO ckIn;
+        memset(&ckIn, 0, sizeof(MMCKINFO));
+        MMRESULT mmRes = mmioDescend(hmmio, &ckIn, NULL, 0);
+        if (mmRes != MMSYSERR_NOERROR)
+        {
+            mmioClose(hmmio, 0);
+            UnlockResource(hResData);
+            FreeResource(hResData);
+            return;
+        }
+
+        if (ckIn.ckid != FOURCC_RIFF || ckIn.fccType != mmioFOURCC('W', 'A', 'V', 'E'))
+        {
+            mmioClose(hmmio, 0);
+            UnlockResource(hResData);
+            FreeResource(hResData);
+            return;
+        }
+
+        MMCKINFO ckIn2;
+        memset(&ckIn2, 0, sizeof(MMCKINFO));
+        mmRes = mmioDescend(hmmio, &ckIn2, &ckIn, MMIO_FINDRIFF);
+        if (mmRes != MMSYSERR_NOERROR)
+        {
+            mmioClose(hmmio, 0);
+            UnlockResource(hResData);
+            FreeResource(hResData);
+            return;
+        }
+
+        WAVEFORMATEX wfx;
+        memset(&wfx, 0, sizeof(WAVEFORMATEX));
+        wfx.cbSize = sizeof(WAVEFORMATEX);
+
+        ckIn2.ckid = mmioFOURCC('f', 'm', 't', ' ');
+        mmRes = mmioDescend(hmmio, &ckIn2, &ckIn, MMIO_FINDCHUNK);
+        if (mmRes == MMSYSERR_NOERROR)
+        {
+            mmioRead(hmmio, (HPSTR)&wfx, sizeof(WAVEFORMATEX));
+        }
+        else
+        {
+            wfx.wFormatTag = WAVE_FORMAT_PCM;
+            wfx.nChannels = 2;
+            wfx.nSamplesPerSec = 44100;
+            wfx.nBlockAlign = 4;
+            wfx.nAvgBytesPerSec = 176400;
+            wfx.wBitsPerSample = 16;
+        }
+        mmioAscend(hmmio, &ckIn2, 0);
+
+        HWAVEOUT hWaveOut;
+        MMRESULT result = waveOutOpen(&hWaveOut, WAVE_MAPPER, &wfx, NULL, NULL, CALLBACK_NULL);
+        if (result != MMSYSERR_NOERROR)
+        {
+            mmioClose(hmmio, 0);
+            UnlockResource(hResData);
+            FreeResource(hResData);
+            return;
+        }
+
+        if (volume >= 0 && volume <= 100)
+        {
+            DWORD vol = (volume * 0xFFFF) / 100;
+            vol = (vol << 16) | vol;
+            waveOutSetVolume(hWaveOut, vol);
+        }
+
+        ckIn2.ckid = mmioFOURCC('d', 'a', 't', 'a');
+        mmRes = mmioDescend(hmmio, &ckIn2, &ckIn, MMIO_FINDCHUNK);
+        if (mmRes != MMSYSERR_NOERROR)
+        {
+            waveOutClose(hWaveOut);
+            mmioClose(hmmio, 0);
+            UnlockResource(hResData);
+            FreeResource(hResData);
+            return;
+        }
+
+        WAVEHDR wh;
+        memset(&wh, 0, sizeof(WAVEHDR));
+        wh.dwBufferLength = ckIn2.cksize;
+        wh.lpData = (LPSTR)pResData + ckIn2.dwDataOffset;
+
+        MMRESULT resPrep = waveOutPrepareHeader(hWaveOut, &wh, sizeof(WAVEHDR));
+        if (resPrep != MMSYSERR_NOERROR)
+        {
+            waveOutClose(hWaveOut);
+            mmioClose(hmmio, 0);
+            UnlockResource(hResData);
+            FreeResource(hResData);
+            return;
+        }
+
+        waveOutWrite(hWaveOut, &wh, sizeof(WAVEHDR));
+        waveOutClose(hWaveOut);
+        mmioClose(hmmio, 0);
+        UnlockResource(hResData);
+        FreeResource(hResData);
     }
 }
 
@@ -183,12 +317,12 @@ void CDataManager::LoadConfig(const std::wstring &cfg_dir)
     m_config.play_sound = cfg_bool_val_getter(L"config", L"play_sound", 1);
 
     auto sound_id = cfg_int_val_getter(L"config", L"sound_id", 0);
-    if (sound_id < 0 || sound_id > 6) sound_id = 0;
+    if (sound_id < 0 || sound_id >= 7) sound_id = 0;
     m_config.sound_id = sound_id;
 
-    m_config.sound_volume = cfg_int_val_getter(L"config", L"sound_volume", 100);
-    if (m_config.sound_volume < 0) m_config.sound_volume = 0;
-    if (m_config.sound_volume > 100) m_config.sound_volume = 100;
+    auto sound_volume = cfg_int_val_getter(L"config", L"sound_volume", 100);
+    if (sound_volume < 0 || sound_volume > 100) sound_volume = 100;
+    m_config.sound_volume = sound_volume;
 
     auto dc_func = cfg_int_val_getter(L"config", L"taskbar_dc_action", 1);
     if (dc_func < 0 || dc_func > 1) dc_func = 1;

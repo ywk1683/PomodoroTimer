@@ -17,20 +17,20 @@
 #define IDC_SPIN_NUM_LOOPS              1006
 #define IDR_WAVE1                       1006
 #define IDR_WAVE2                       1007
+#define IDC_CHECK_PLAY_SOUND            1007
 #define IDR_WAVE3                       1008
-#define IDR_WAVE4                       1024
-#define IDR_WAVE5                       1025
-#define IDR_WAVE6                       1026
-#define IDR_WAVE7                       1027
 #define IDC_COMBO_SOUND_LIST            1008
 #define IDC_BTN_SOUND_TEST              1009
 #define IDS_PLUGIN_NAME                 1009
 #define IDS_PLUGIN_DESCRIPTION          1010
 #define IDC_CHECK1                      1010
 #define IDC_CHECK_AUTO_START            1010
+#define IDB_BITMAP_QR_ALIPAY            1010
 #define IDS_PS_RUNNING                  1011
+#define IDB_BITMAP_QR_WECHAT            1011
 #define IDC_BTN_DONATE                  1011
 #define IDS_PS_PAUSE                    1012
+#define IDD_DLG_DONATE                  1012
 #define IDC_CHECK_SHOW_SECONDS          1012
 #define IDS_PS_STOP                     1013
 #define IDC_RADIO_DC_OPEN_OPTIONS_DLG   1013
@@ -50,8 +50,7 @@
 #define IDC_SPIN_LONG_BREAK_INTERVAL    1019
 #define IDS_VERSION                     1020
 #define IDC_SLIDER_VOLUME               1021
-#define IDC_STATIC_VOLUME_VALUE         1022
-#define IDD_DLG_ABOUT                   1023
+#define IDD_DLG_ABOUT                   1022
 #define ID_FUNC_32771                   32771
 #define ID_FUNC_32772                   32772
 #define ID_FUNC_32773                   32773
@@ -69,7 +68,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        1014
 #define _APS_NEXT_COMMAND_VALUE         32782
-#define _APS_NEXT_CONTROL_VALUE         1024
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           1000
 #endif
 #endif
