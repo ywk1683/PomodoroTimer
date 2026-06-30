@@ -229,9 +229,13 @@
     <Image Include="res\QR_WeChat.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Media Include="res\Alarm02.wav" />
-    <Media Include="res\Alarm05.wav" />
-    <Media Include="res\Alarm06.wav" />
+    <Media Include="res\Alarm_ascend.wav" />
+    <Media Include="res\Alarm_beep.wav" />
+    <Media Include="res\Alarm_bell.wav" />
+    <Media Include="res\Alarm_chime.wav" />
+    <Media Include="res\Alarm_dual_tone.wav" />
+    <Media Include="res\Alarm_long_chime.wav" />
+    <Media Include="res\Alarm_notify.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

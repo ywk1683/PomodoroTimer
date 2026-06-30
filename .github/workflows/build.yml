@@ -2,23 +2,13 @@ name: Build DLL
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
     runs-on: windows-latest
-    
-    strategy:
-      matrix:
-        arch: [Win32, x64]
-        configuration: [Release]
-        include:
-          - arch: Win32
-            vcvars: "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Auxiliary\\Build\\vcvars32.bat\""
-          - arch: x64
-            vcvars: "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat\""
 
     steps:
     - name: Checkout
@@ -27,17 +17,13 @@ jobs:
     - name: Setup Visual Studio
       uses: microsoft/setup-msbuild@v2
 
-    - name: Build
-      env:
-        VCVARS: ${{ matrix.vcvars }}
+    - name: Build x64
       run: |
-        call "$ENV:VCVARS"
-        msbuild PomodoroTimer.vcxproj /p:Configuration=Release /p:Platform=${{ matrix.arch }} /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0 /t:Rebuild /v:minimal
+        msbuild PomodoroTimer.vcxproj /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0 /t:Rebuild /v:normal
 
     - name: Upload DLL
       uses: actions/upload-artifact@v4
       with:
-        name: PomodoroTimer-${{ matrix.arch }}
-        path: |
-          ${{ matrix.arch == 'Win32' && 'Win32/Release/PomodoroTimer.dll' || 'x64/Release/PomodoroTimer.dll' }}
+        name: PomodoroTimer-x64
+        path: bin\x64\Release\PomodoroTimer.dll
         compression-level: 0

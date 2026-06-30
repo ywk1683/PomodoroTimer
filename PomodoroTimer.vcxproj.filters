@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="源文件">
@@ -106,13 +106,25 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Media Include="res\Alarm02.wav">
+    <Media Include="res\Alarm_ascend.wav">
       <Filter>资源文件</Filter>
     </Media>
-    <Media Include="res\Alarm05.wav">
+    <Media Include="res\Alarm_beep.wav">
       <Filter>资源文件</Filter>
     </Media>
-    <Media Include="res\Alarm06.wav">
+    <Media Include="res\Alarm_bell.wav">
+      <Filter>资源文件</Filter>
+    </Media>
+    <Media Include="res\Alarm_chime.wav">
+      <Filter>资源文件</Filter>
+    </Media>
+    <Media Include="res\Alarm_dual_tone.wav">
+      <Filter>资源文件</Filter>
+    </Media>
+    <Media Include="res\Alarm_long_chime.wav">
+      <Filter>资源文件</Filter>
+    </Media>
+    <Media Include="res\Alarm_notify.wav">
       <Filter>资源文件</Filter>
     </Media>
   </ItemGroup>
