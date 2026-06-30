@@ -25,9 +25,12 @@ jobs:
       shell: pwsh
       run: |
         $url = "https://raw.githubusercontent.com/zhongyang219/TrafficMonitor/master/include/PluginInterface.h"
-        $dir = Join-Path ${{ github.workspace }} "include"
+        $repoDir = "${{ github.workspace }}"
+        $parentDir = Split-Path $repoDir -Parent
+        $dir = Join-Path $parentDir "include"
         New-Item -ItemType Directory -Force -Path $dir
         Invoke-WebRequest -Uri $url -OutFile (Join-Path $dir "PluginInterface.h")
+        Write-Output "Downloaded to: $(Join-Path $dir 'PluginInterface.h')"
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
