@@ -1,5 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
+#pragma code_page(936)
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -181,7 +182,7 @@ END
 IDD_DLG_ABOUT DIALOGEX 0, 0, 200, 100
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "关于"
-FONT 9, "微软雅黑", 400, 0, 0x0
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LTEXT           "PomodoroTimer",IDC_STATIC,0,12,200,16,SS_CENTER
     LTEXT           "版本 1.5",IDC_STATIC,0,34,200,14,SS_CENTER
