@@ -75,20 +75,28 @@ namespace dm
         }
     }
 
-    void play_sound(int id, int volume, const std::wstring &custom_path, bool use_custom)
+    void play_sound(int id, int volume, const std::wstring &custom_path)
     {
-        // set volume
-        DWORD vol = (volume * 0xFFFF) / 100;
-        waveOutSetVolume(NULL, MAKELONG(vol, vol));
-
         AFX_MANAGE_STATE(AfxGetStaticModuleState());
 
-        if (use_custom && !custom_path.empty())
+        if (id == 3 && !custom_path.empty())
         {
-            PlaySound(custom_path.c_str(), NULL, SND_ASYNC | SND_FILENAME);
+            // Play custom sound (any format) via MCI
+            mciSendString(L"close all", NULL, 0, NULL);
+            std::wstring cmd = L"open \"" + custom_path + L"\" alias mysound";
+            mciSendString(cmd.c_str(), NULL, 0, NULL);
+            DWORD mci_vol = (volume * 1000) / 100;
+            wchar_t vol_cmd[64];
+            swprintf_s(vol_cmd, L"setaudio mysound volume to %lu", mci_vol);
+            mciSendString(vol_cmd, NULL, 0, NULL);
+            mciSendString(L"play mysound", NULL, 0, NULL);
         }
         else
         {
+            // Play built-in sound (WAV resource)
+            DWORD vol = (volume * 0xFFFF) / 100;
+            waveOutSetVolume(NULL, MAKELONG(vol, vol));
+
             auto sound_res_id = get_sound_resource_id(id);
             PlaySound(MAKEINTRESOURCE(sound_res_id), AfxGetResourceHandle(), SND_ASYNC | SND_RESOURCE);
         }
@@ -192,14 +200,12 @@ void CDataManager::LoadConfig(const std::wstring &cfg_dir)
     m_config.play_sound = cfg_bool_val_getter(L"config", L"play_sound", 1);
 
     auto sound_id = cfg_int_val_getter(L"config", L"sound_id", 0);
-    if (sound_id < 0 || sound_id >= 3) sound_id = 0;
+    if (sound_id < 0 || sound_id > 3) sound_id = 0;
     m_config.sound_id = sound_id;
 
     m_config.sound_volume = cfg_int_val_getter(L"config", L"sound_volume", 100);
     if (m_config.sound_volume < 0) m_config.sound_volume = 0;
     if (m_config.sound_volume > 100) m_config.sound_volume = 100;
-
-    m_config.use_custom_sound = cfg_bool_val_getter(L"config", L"use_custom_sound", 0);
 
     wchar_t buffer[512]{ 0 };
     GetPrivateProfileString(L"config", L"custom_sound_path", L"", buffer, 512, m_config_file_path.c_str());
@@ -235,7 +241,6 @@ void CDataManager::SaveConfig() const
     cfg_bool_val_writter(L"config", L"play_sound", m_config.play_sound);
     cfg_int_val_writter(L"config", L"sound_id", m_config.sound_id);
     cfg_int_val_writter(L"config", L"sound_volume", m_config.sound_volume);
-    cfg_bool_val_writter(L"config", L"use_custom_sound", m_config.use_custom_sound);
     WritePrivateProfileString(L"config", L"custom_sound_path", m_config.custom_sound_path.c_str(), m_config_file_path.c_str());
     cfg_int_val_writter(L"config", L"taskbar_dc_action", m_config.taskbar_dc_action);
 }
@@ -442,7 +447,7 @@ void CDataManager::Update()
 
 void CDataManager::PlaySoundById(int id) const
 {
-    dm::play_sound(id, m_config.sound_volume, m_config.custom_sound_path, m_config.use_custom_sound);
+    dm::play_sound(id, m_config.sound_volume, m_config.custom_sound_path);
 }
 
 // go to next loop.

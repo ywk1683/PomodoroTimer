@@ -25,9 +25,8 @@ struct SConfig
     int taskbar_dc_action{ 1 };
 
     bool play_sound{ true };
-    int sound_id{ 0 };
+    int sound_id{ 0 };  // 0-2 built-in, 3 = custom
     int sound_volume{ 100 };  // 0-100
-    bool use_custom_sound{ false };
     std::wstring custom_sound_path;
 
     bool show_logo{ true };

@@ -21,7 +21,6 @@ COptionsDlg::COptionsDlg(CWnd* pParent /*=nullptr*/)
 	, m_boolPlaySound(FALSE)
 	, m_boolAutoStart(FALSE)
 	, m_boolShowSeconds(FALSE)
-	, m_boolUseCustomSound(FALSE)
 	, m_intSoundVolume(100)
 	, m_intRadioDoubleClickAction(0)
 	, m_boolUseLongBreak(FALSE)
@@ -44,9 +43,6 @@ void COptionsDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK_PLAY_SOUND, m_boolPlaySound);
 	DDX_Control(pDX, IDC_COMBO_SOUND_LIST, m_ctrlSoundList);
 	DDX_Control(pDX, IDC_SLIDER_VOLUME, m_ctrlSliderVolume);
-	DDX_Control(pDX, IDC_EDIT_CUSTOM_SOUND_PATH, m_ctrlEditCustomSoundPath);
-	DDX_Check(pDX, IDC_CHECK_CUSTOM_SOUND, m_boolUseCustomSound);
-	DDX_Text(pDX, IDC_EDIT_CUSTOM_SOUND_PATH, m_strCustomSoundPath);
 	DDX_Control(pDX, IDC_EDIT_TIME_SPAN_WORK, m_ctrlEditTimeSpanWork);
 	DDX_Control(pDX, IDC_EDIT_TIME_SPAN_SHORT_BREAK, m_ctrlEditTimeSpanShortBreak);
 	DDX_Control(pDX, IDC_EDIT_NUM_LOOPS, m_ctrlEditNumLoops);
@@ -65,8 +61,7 @@ BEGIN_MESSAGE_MAP(COptionsDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_LOOP, &COptionsDlg::OnBnClickedCheckAutoLoop)
 	ON_BN_CLICKED(IDC_CHECK_PLAY_SOUND, &COptionsDlg::OnBnClickedCheckPlaySound)
 	ON_BN_CLICKED(IDC_BTN_SOUND_TEST, &COptionsDlg::OnBnClickedBtnSoundTest)
-	ON_BN_CLICKED(IDC_CHECK_CUSTOM_SOUND, &COptionsDlg::OnBnClickedCheckCustomSound)
-	ON_BN_CLICKED(IDC_BTN_BROWSE_SOUND, &COptionsDlg::OnBnClickedBtnBrowseSound)
+	ON_CBN_SELCHANGE(IDC_COMBO_SOUND_LIST, &COptionsDlg::OnCbnSelchangeComboSoundList)
 	ON_WM_HSCROLL()
 	ON_EN_CHANGE(IDC_EDIT_TIME_SPAN_WORK, &COptionsDlg::OnEnChangeEditTimeSpanWork)
 	ON_EN_CHANGE(IDC_EDIT_TIME_SPAN_SHORT_BREAK, &COptionsDlg::OnEnChangeEditTimeSpanShortBreak)
@@ -129,10 +124,11 @@ BOOL COptionsDlg::OnInitDialog()
 	// enable/disable controls of long break
 	EnableControlsAboutLongBreak(m_boolUseLongBreak);
 
-	// init sound list combobox
+	// init sound list combobox: 3 built-in + browse item
 	m_ctrlSoundList.AddString(L"Sound-1");
 	m_ctrlSoundList.AddString(L"Sound-2");
 	m_ctrlSoundList.AddString(L"Sound-3");
+	m_ctrlSoundList.AddString(L"浏览音频文件...");
 	m_ctrlSoundList.SetCurSel(cfg.sound_id);
 
 	// init volume slider
@@ -141,11 +137,6 @@ BOOL COptionsDlg::OnInitDialog()
 	m_ctrlSliderVolume.SetTicFreq(10);
 	m_intSoundVolume = cfg.sound_volume;
 	UpdateVolumeLabel();
-
-	// init custom sound
-	m_boolUseCustomSound = cfg.use_custom_sound ? TRUE : FALSE;
-	m_strCustomSoundPath = cfg.custom_sound_path.c_str();
-	EnableControlsAboutCustomSound(m_boolUseCustomSound);
 
 	// init radio buttons of the action when user double clicked taskbar window
 	m_intRadioDoubleClickAction = cfg.taskbar_dc_action;
@@ -167,15 +158,6 @@ void COptionsDlg::EnableControlsAboutSound(BOOL enable /* = TRUE */)
 	GetDlgItem(IDC_COMBO_SOUND_LIST)->EnableWindow(enable);
 	GetDlgItem(IDC_BTN_SOUND_TEST)->EnableWindow(enable);
 	GetDlgItem(IDC_SLIDER_VOLUME)->EnableWindow(enable);
-	GetDlgItem(IDC_CHECK_CUSTOM_SOUND)->EnableWindow(enable);
-	GetDlgItem(IDC_EDIT_CUSTOM_SOUND_PATH)->EnableWindow(enable && m_boolUseCustomSound);
-	GetDlgItem(IDC_BTN_BROWSE_SOUND)->EnableWindow(enable && m_boolUseCustomSound);
-}
-
-void COptionsDlg::EnableControlsAboutCustomSound(BOOL enable /* = TRUE */)
-{
-	GetDlgItem(IDC_EDIT_CUSTOM_SOUND_PATH)->EnableWindow(enable);
-	GetDlgItem(IDC_BTN_BROWSE_SOUND)->EnableWindow(enable);
 }
 
 void COptionsDlg::UpdateVolumeLabel()
@@ -229,8 +211,6 @@ void COptionsDlg::OnOK()
 	cfg.play_sound = m_boolPlaySound == TRUE;
 	cfg.sound_id = m_ctrlSoundList.GetCurSel();
 	cfg.sound_volume = m_ctrlSliderVolume.GetPos();
-	cfg.use_custom_sound = m_boolUseCustomSound == TRUE;
-	cfg.custom_sound_path = m_strCustomSoundPath.GetString();
 
 	cfg.show_time_seconds = m_boolShowSeconds == TRUE;
 
@@ -272,22 +252,35 @@ void COptionsDlg::OnBnClickedBtnSoundTest()
 }
 
 
-void COptionsDlg::OnBnClickedCheckCustomSound()
+void COptionsDlg::OnCbnSelchangeComboSoundList()
 {
-	UpdateData(TRUE);
-	EnableControlsAboutCustomSound(m_boolUseCustomSound);
-}
-
-
-void COptionsDlg::OnBnClickedBtnBrowseSound()
-{
-	static wchar_t szFilters[] = L"音频文件 (*.wav)|*.wav||";
-
-	CFileDialog dlg(TRUE, L"wav", NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, szFilters, this);
-	if (dlg.DoModal() == IDOK)
+	int sel = m_ctrlSoundList.GetCurSel();
+	if (sel == 3)
 	{
-		m_strCustomSoundPath = dlg.GetPathName();
-		UpdateData(FALSE);
+		// "浏览音频文件..." selected - open file dialog
+		static wchar_t szFilters[] = L"音频文件 (*.wav;*.mp3;*.wma;*.flac;*.aac;*.ogg;*.m4a)|*.wav;*.mp3;*.wma;*.flac;*.aac;*.ogg;*.m4a|所有文件 (*.*)|*.*||";
+
+		CFileDialog dlg(TRUE, L"wav", NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, szFilters, this);
+		if (dlg.DoModal() == IDOK)
+		{
+			// save custom sound path and keep selection at index 3
+			auto &cfg = CDataManager::Instance().GetConfig();
+			cfg.custom_sound_path = dlg.GetPathName().GetString();
+			cfg.sound_id = 3;
+		}
+		else
+		{
+			// user cancelled, revert combo to previous sound_id
+			auto &cfg = CDataManager::Instance().GetConfig();
+			m_ctrlSoundList.SetCurSel(cfg.sound_id);
+		}
+	}
+	else
+	{
+		// built-in sound selected, clear custom path
+		auto &cfg = CDataManager::Instance().GetConfig();
+		cfg.sound_id = sel;
+		cfg.custom_sound_path.clear();
 	}
 }
 
@@ -349,6 +342,7 @@ void COptionsDlg::OnEnChangeEditNumLoops()
 
 void COptionsDlg::OnBnClickedBtnDonate()
 {
-	CDialogEx dlg(IDD_DLG_DONATE, this);
-	dlg.DoModal();
+	// Show about dialog
+	CDialogEx aboutDlg(IDD_DLG_ABOUT, this);
+	aboutDlg.DoModal();
 }

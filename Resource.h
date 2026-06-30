@@ -50,10 +50,8 @@
 #define IDC_SPIN_LONG_BREAK_INTERVAL    1019
 #define IDS_VERSION                     1020
 #define IDC_SLIDER_VOLUME               1021
-#define IDC_EDIT_CUSTOM_SOUND_PATH      1022
-#define IDC_BTN_BROWSE_SOUND            1023
-#define IDC_CHECK_CUSTOM_SOUND          1024
-#define IDC_STATIC_VOLUME_VALUE         1025
+#define IDC_STATIC_VOLUME_VALUE         1022
+#define IDD_DLG_ABOUT                   1023
 #define ID_FUNC_32771                   32771
 #define ID_FUNC_32772                   32772
 #define ID_FUNC_32773                   32773
@@ -71,7 +69,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        1014
 #define _APS_NEXT_COMMAND_VALUE         32782
-#define _APS_NEXT_CONTROL_VALUE         1026
+#define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           1000
 #endif
 #endif
