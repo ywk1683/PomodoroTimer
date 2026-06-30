@@ -28,12 +28,9 @@
 #define IDS_PLUGIN_DESCRIPTION          1010
 #define IDC_CHECK1                      1010
 #define IDC_CHECK_AUTO_START            1010
-#define IDB_BITMAP_QR_ALIPAY            1010
 #define IDS_PS_RUNNING                  1011
-#define IDB_BITMAP_QR_WECHAT            1011
 #define IDC_BTN_DONATE                  1011
 #define IDS_PS_PAUSE                    1012
-#define IDD_DLG_DONATE                  1012
 #define IDC_CHECK_SHOW_SECONDS          1012
 #define IDS_PS_STOP                     1013
 #define IDC_RADIO_DC_OPEN_OPTIONS_DLG   1013
